@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live QR Code Generator</title>
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- QR Code generation library -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <style>
+        /* Custom font and dark theme */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4 sm:p-6 lg:p-8">
+
+    <div class="w-full max-w-5xl bg-gray-800 rounded-2xl shadow-2xl p-6 sm:p-8 lg:p-12">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-cyan-400">Live QR Code Generator</h1>
+            <p class="text-gray-400 mt-2">Enter text or a URL to instantly generate a QR code.</p>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Left Panel: Text Input -->
+            <div class="bg-gray-700 p-6 rounded-xl flex flex-col">
+                <label for="text-input" class="text-lg font-semibold mb-3 text-gray-300">Your Text</label>
+                <textarea id="text-input" class="w-full h-64 flex-grow bg-gray-800 text-white rounded-lg p-4 border-2 border-gray-600 focus:border-cyan-500 focus:ring-cyan-500 transition duration-300 resize-none" placeholder="Type something here..."></textarea>
+            </div>
+
+            <!-- Right Panel: QR Code Display -->
+            <div class="bg-gray-700 p-6 rounded-xl flex flex-col items-center justify-center">
+                 <h2 class="text-lg font-semibold mb-4 text-gray-300">Your QR Code</h2>
+                <div id="qrcode" class="bg-white p-4 rounded-lg shadow-lg w-64 h-64 flex items-center justify-center">
+                    <!-- QR Code will be generated here -->
+                </div>
+                 <p id="qr-placeholder" class="text-gray-500 mt-4">QR code will appear here</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Get the necessary elements from the DOM
+        const textInput = document.getElementById('text-input');
+        const qrcodeContainer = document.getElementById('qrcode');
+        const qrPlaceholder = document.getElementById('qr-placeholder');
+
+        // Initialize QRCode.js
+        // The library will generate the QR code inside the 'qrcode' div
+        const qrcode = new QRCode(qrcodeContainer, {
+            width: 256,
+            height: 256,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+            correctLevel: QRCode.CorrectLevel.H
+        });
+
+        // Function to generate the QR code
+        function generateQrCode(text) {
+            if (text.trim() === '') {
+                // If input is empty, clear the QR code using the library's method
+                qrcode.clear();
+                qrPlaceholder.style.display = 'block';
+                qrcodeContainer.style.display = 'none';
+            } else {
+                // If there is text, generate a new QR code.
+                // The library handles clearing the previous one automatically.
+                qrcode.makeCode(text);
+                qrPlaceholder.style.display = 'none';
+                qrcodeContainer.style.display = 'flex';
+            }
+        }
+
+        // Add an event listener to the text input field
+        // 'input' event fires immediately after the value of an element has changed
+        textInput.addEventListener('input', () => {
+            generateQrCode(textInput.value);
+        });
+
+        // Set up the initial state on page load
+        window.onload = () => {
+            // Initially hide the QR code container until user types
+            qrcodeContainer.style.display = 'none'; 
+            textInput.focus();
+        };
+    </script>
+
+</body>
+</html>
